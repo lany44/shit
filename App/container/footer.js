@@ -69,7 +69,7 @@ class FooterContainer extends Component {
         text: '我'
       }
     };
-    const {path, changeTo} = this.props;
+    const {path, routeTo} = this.props;
     let icon_style_list = [styles.icon];
     let text_style_list = [styles.text];
     if (path === key) {
@@ -83,7 +83,7 @@ class FooterContainer extends Component {
     return (
       <View style={styles.routeItem}>
         <Text
-          onPress={()=>changeTo(key)}
+          onPress={()=>routeTo(key)}
           style={icon_style_list}
         >
           {icon(footer_item_map[key].icon)}

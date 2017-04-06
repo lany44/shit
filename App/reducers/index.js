@@ -3,6 +3,17 @@
  */
 import {combineReducers} from 'redux';
 
+const appReducer = (state, action) => {
+  switch (action.type) {
+    case 'CHANGE_LOADING': {
+      return Object.assign({}, state, {isloading: action.isloading});
+    }
+    default: {
+      return {isloading: true}
+    }
+  }
+};
+
 const routeReducer = (state, action) => {
   switch (action.type) {
     case 'CHANGE_ROUTE': {
@@ -14,6 +25,9 @@ const routeReducer = (state, action) => {
   }
 };
 
+
+
 export default combineReducers({
-  route: routeReducer,
+  app: appReducer,
+  route: routeReducer
 });

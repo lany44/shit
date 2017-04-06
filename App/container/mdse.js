@@ -7,6 +7,10 @@ import {
   Text
 } from 'react-native';
 
+const styles = StyleSheet.create({
+
+});
+
 class MdseContainer extends Component {
 
   constructor(props) {

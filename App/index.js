@@ -14,17 +14,23 @@ import thunk from 'redux-thunk';
 import reducers from './reducers';
 
 import * as routeAction from './actions/routeAction';
+import {rem} from './config/sys_config';
 
 import MdseContainer from './container/mdse';
 import TeamContainer from './container/team';
 import DailyContainer from './container/daily';
 import ProfileContainer from './container/profile';
 import FooterContainer from './container/footer';
+import StatusHeader from './component/statusHeader'
 
 const styles = StyleSheet.create({
   wrap: {
     flex: 1,
-    backgroundColor: 'red'
+  },
+  headerWrap: {
+    height: .4*rem,
+    paddingRight: .2*rem,
+    paddingLeft: .2*rem,
   },
   footerWrap: {
     flexDirection: 'row',
@@ -40,9 +46,12 @@ class App extends Component {
   }
 
   render() {
-    const { route } = this.props;
+    const { route, app } = this.props;
     return (
       <View style={styles.wrap}>
+        <View style={styles.headerWrap}>
+          <StatusHeader isloading={app.isloading}/>
+        </View>
         <ScrollView>
           {route.path === 'mdse' ? <MdseContainer /> : null}
           {route.path === 'team' ? <TeamContainer /> : null}
@@ -61,6 +70,7 @@ App.context = {
 const loggerMiddleware = createLogger();
 const store = applyMiddleware(thunk, loggerMiddleware)(createStore)(reducers);
 const mapStateToProps = state => ({
+  app: state.app,
   route: state.route
 });
 const mapDispatchToProps = dispatch => ({
@@ -71,7 +81,7 @@ export default function () {
   return () => {
     return (
       <Provider store={store}>
-        <App/>
+        <App />
       </Provider>
     )
   }
