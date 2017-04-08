@@ -9,7 +9,7 @@ const appReducer = (state, action) => {
       return Object.assign({}, state, {isloading: action.isloading});
     }
     default: {
-      return {isloading: true}
+      return {isloading: false}
     }
   }
 };
@@ -25,9 +25,21 @@ const routeReducer = (state, action) => {
   }
 };
 
-
+const mdseReducer = (state, action) => {
+  switch (action.type) {
+    default: {
+      return {
+        init: false,
+        page: 1,
+        items_in_page: 10,
+        mdse_list: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+      }
+    }
+  }
+};
 
 export default combineReducers({
   app: appReducer,
-  route: routeReducer
+  route: routeReducer,
+  mdsePage: mdseReducer
 });

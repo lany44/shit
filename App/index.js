@@ -5,7 +5,6 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   View,
-  ScrollView
 } from 'react-native';
 import {createStore, applyMiddleware, bindActionCreators} from 'redux';
 import {Provider , connect} from 'react-redux';
@@ -25,7 +24,7 @@ import StatusHeader from './component/statusHeader'
 
 const styles = StyleSheet.create({
   wrap: {
-    flex: 1,
+    flex: 1
   },
   headerWrap: {
     height: .4*rem,
@@ -34,7 +33,7 @@ const styles = StyleSheet.create({
   },
   footerWrap: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-around',
     backgroundColor: 'white',
   }
@@ -46,18 +45,16 @@ class App extends Component {
   }
 
   render() {
-    const { route, app } = this.props;
+    const { route, app, mdsePage } = this.props;
     return (
       <View style={styles.wrap}>
         <View style={styles.headerWrap}>
           <StatusHeader isloading={app.isloading}/>
         </View>
-        <ScrollView>
-          {route.path === 'mdse' ? <MdseContainer /> : null}
-          {route.path === 'team' ? <TeamContainer /> : null}
-          {route.path === 'daily' ? <DailyContainer /> : null}
-          {route.path === 'profile' ? <ProfileContainer /> : null}
-        </ScrollView>
+        {route.path === 'mdse' ? <MdseContainer state={mdsePage} /> : null}
+        {route.path === 'team' ? <TeamContainer /> : null}
+        {route.path === 'daily' ? <DailyContainer /> : null}
+        {route.path === 'profile' ? <ProfileContainer /> : null}
         <FooterContainer style={styles.footerWrap} path={route.path} {...this.props.routeAction}/>
       </View>
     )
@@ -71,7 +68,8 @@ const loggerMiddleware = createLogger();
 const store = applyMiddleware(thunk, loggerMiddleware)(createStore)(reducers);
 const mapStateToProps = state => ({
   app: state.app,
-  route: state.route
+  route: state.route,
+  mdsePage: state.mdsePage,
 });
 const mapDispatchToProps = dispatch => ({
   routeAction: bindActionCreators(routeAction, dispatch),

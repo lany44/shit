@@ -16,7 +16,7 @@ import {rem} from '../config/sys_config';
 const styles = StyleSheet.create({
   wrap: {
     flexDirection: 'row',
-    alignItems: 'flex-end',
+    alignItems: 'center',
     justifyContent: 'space-between'
   },
   loading: {
@@ -26,6 +26,9 @@ const styles = StyleSheet.create({
   },
   time: {
     fontSize: .3*rem
+  },
+  singleTime: {
+    justifyContent: 'flex-end'
   }
 });
 
@@ -72,7 +75,9 @@ class statusHeader extends Component {
         }]}>{icon('guanbi')}</Animated.Text>
         <Text style={styles.time}>{this.state.time}</Text>
       </View>
-    : <Text style={styles.time}>{this.state.time}</Text>
+    : <View style={[styles.wrap, styles.singleTime]}>
+        <Text style={styles.time}>{this.state.time}</Text>
+      </View>
   }
 }
 
