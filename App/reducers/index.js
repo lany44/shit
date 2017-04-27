@@ -9,7 +9,10 @@ const appReducer = (state, action) => {
       return Object.assign({}, state, {isloading: action.isloading});
     }
     default: {
-      return {isloading: false}
+      return {
+        isloading: false,
+        islogin: true
+      }
     }
   }
 };
@@ -19,20 +22,23 @@ const routeReducer = (state, action) => {
     case 'CHANGE_ROUTE': {
       return {path: action.new_path}
     }
+    case 'CHECK_MDSE_DETAIL': {
+      return {path: 'mdse', id: action.id}
+    }
     default: {
-      return {path: 'mdse'}
+      return {path: 'list', id: 1}
     }
   }
 };
 
-const mdseReducer = (state, action) => {
+const listPageReducer = (state, action) => {
   switch (action.type) {
     default: {
       return {
         init: false,
         page: 1,
         items_in_page: 10,
-        mdse_list: [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
+        mdse_list: [{id: 1},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
       }
     }
   }
@@ -41,5 +47,5 @@ const mdseReducer = (state, action) => {
 export default combineReducers({
   app: appReducer,
   route: routeReducer,
-  mdsePage: mdseReducer
+  listPage: listPageReducer
 });

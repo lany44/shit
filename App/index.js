@@ -15,9 +15,9 @@ import reducers from './reducers';
 import * as routeAction from './actions/routeAction';
 import {rem} from './config/sys_config';
 
+import ListContainer from './container/list';
 import MdseContainer from './container/mdse';
-import TeamContainer from './container/team';
-import DailyContainer from './container/daily';
+import PublishContainer from './container/publish';
 import ProfileContainer from './container/profile';
 import FooterContainer from './container/footer';
 import StatusHeader from './component/statusHeader'
@@ -31,12 +31,6 @@ const styles = StyleSheet.create({
     paddingRight: .2*rem,
     paddingLeft: .2*rem,
   },
-  footerWrap: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    backgroundColor: 'white',
-  }
 });
 
 class App extends Component {
@@ -45,31 +39,27 @@ class App extends Component {
   }
 
   render() {
-    const { route, app, mdsePage } = this.props;
+    const { route, app, listPage } = this.props;
     return (
       <View style={styles.wrap}>
         <View style={styles.headerWrap}>
           <StatusHeader isloading={app.isloading}/>
         </View>
-        {route.path === 'mdse' ? <MdseContainer state={mdsePage} /> : null}
-        {route.path === 'team' ? <TeamContainer /> : null}
-        {route.path === 'daily' ? <DailyContainer /> : null}
+        {route.path === 'list' ? <ListContainer state={listPage} clickHandle={this.props.routeAction.checkMdseDetail}/> : null}
+        {route.path === 'mdse' ? <MdseContainer id={route.id} /> : null}
+        {route.path === 'publish' ? <PublishContainer /> : null}
         {route.path === 'profile' ? <ProfileContainer /> : null}
-        <FooterContainer style={styles.footerWrap} path={route.path} {...this.props.routeAction}/>
+        <FooterContainer islogin={app.islogin} path={route.path} {...this.props.routeAction}/>
       </View>
     )
   }
 }
-App.context = {
-
-};
-
 const loggerMiddleware = createLogger();
 const store = applyMiddleware(thunk, loggerMiddleware)(createStore)(reducers);
 const mapStateToProps = state => ({
   app: state.app,
   route: state.route,
-  mdsePage: state.mdsePage,
+  listPage: state.listPage,
 });
 const mapDispatchToProps = dispatch => ({
   routeAction: bindActionCreators(routeAction, dispatch),

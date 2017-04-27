@@ -6,11 +6,24 @@ import {
   StyleSheet,
   View,
   Text,
+  AlertIOS
 } from 'react-native';
 import icon from "../asset/font/iconfontConf";
 import {rem} from '../config/sys_config';
 
 const styles = StyleSheet.create({
+  footerWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-around',
+    backgroundColor: 'white',
+    shadowColor: 'black',
+    shadowOffset:{
+     width: 0,
+     height: -1,
+    },
+    shadowOpacity: .1,
+  },
   routeItem: {
     flex: 1,
     flexDirection: 'column',
@@ -32,14 +45,11 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 0.3*rem
   },
-  mdseFix: {
+  listFix: {
     fontSize: 0.75*rem
   },
-  teamFix: {
+  publishFix: {
     fontSize: 0.7*rem
-  },
-  dailyFix: {
-    fontSize: 0.77*rem
   },
   profileFix: {
     fontSize: 0.75*rem
@@ -52,17 +62,13 @@ class FooterContainer extends Component {
 
   renderItem(key) {
     const footer_item_map = {
-      mdse: {
+      list: {
         icon: 'woyaochushou',
         text: '拾 趣'
       },
-      team: {
-        icon: 'huodong',
-        text: '小 队'
-      },
-      daily: {
+      publish: {
         icon: 'chuangjianxiaozu',
-        text: '日 常'
+        text: '发 布'
       },
       profile: {
         icon: 'wode',
@@ -72,7 +78,7 @@ class FooterContainer extends Component {
     const {path, routeTo} = this.props;
     let icon_style_list = [styles.icon];
     let text_style_list = [styles.text];
-    if (path === key) {
+    if (path === key || (path === 'mdse' && key === 'list')) {
       icon_style_list.push(styles.activeColor);
       text_style_list.push(styles.activeColor);
     } else {
@@ -83,7 +89,12 @@ class FooterContainer extends Component {
     return (
       <View style={styles.routeItem}>
         <Text
-          onPress={()=>routeTo(key)}
+          onPress={()=>{
+            if (key === 'publish' && !this.props.islogin) {
+              return AlertIOS.alert('提示', '请先登陆');
+            }
+            routeTo(key)
+          }}
           style={icon_style_list}
         >
           {icon(footer_item_map[key].icon)}
@@ -96,10 +107,9 @@ class FooterContainer extends Component {
   }
   render() {
     return (
-      <View style={this.props.style}>
-        {this.renderItem('mdse')}
-        {this.renderItem('team')}
-        {this.renderItem('daily')}
+      <View style={styles.footerWrap}>
+        {this.renderItem('list')}
+        {this.renderItem('publish')}
         {this.renderItem('profile')}
       </View>
     );
