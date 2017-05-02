@@ -4,7 +4,8 @@
 import React, { Component } from 'react';
 import {
   StyleSheet,
-  ScrollView
+  ScrollView,
+  RefreshControl
 } from 'react-native';
 import {rem} from '../config/sys_config';
 import MdseItem from '../component/mdseItem';
@@ -20,28 +21,29 @@ const styles = StyleSheet.create({
   }
 });
 class ListContainer extends Component {
-
   constructor(props) {
     super(props);
-    this.fetchData = this.fetchData.bind(this);
   }
 
   componentDidMount() {
-    this.fetchData()
+    
   }
 
-  handleGetMore() {
+  handleGetMore = () => {
 
   }
 
-  fetchData() {
-
-  }
   render() {
-    const { init, mdse_list } = this.props.state;
+    const { listPage:{init, mdse_list}, app:{isloading} } = this.props;
     const checkMdseDetail = this.props.clickHandle;
     const style = init ? styles.emptyContainer : styles.mdseContainer;
     return <ScrollView
+      refreshControl={
+        <RefreshControl
+          refreshing={isloading}
+          onRefresh={this.handleGetMore}
+        />
+      }
       contentContainerStyle={style}
       automaticallyAdjustContentInsets={false}
     >

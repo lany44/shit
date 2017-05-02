@@ -9,7 +9,7 @@ import {
   Image,
   Text
 } from 'react-native';
-import {rem, windowHeight} from '../config/sys_config'
+import {rem, windowHeight} from '../config/sys_config';
 
 const styles = StyleSheet.create({
   containerWrap: {
@@ -65,10 +65,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center'
   },
-  backText: {
-
+  usrContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative'
+  },
+  usr_pic: {
+    width: 1*rem,
+    height: 1*rem,
+    borderRadius: 20,
+    marginRight: .3*rem
+  },
+  usr_name: {
+    fontWeight: 'bold'
+  },
+  operation_fav: {
+    position: 'absolute',
+    right: .5*rem
   }
 });
+
+
 class MdseContainer extends Component {
   constructor(props) {
     super(props);
@@ -78,6 +95,11 @@ class MdseContainer extends Component {
       <View style={styles.containerWrap}>
         <ScrollView>
           <Image source={require('../asset/1.jpg')} style={styles.img}/>
+          <View style={[styles.usrContainer, styles.marginTop]}>
+            <Image source={require('../asset/2.jpg')} style={styles.usr_pic}/>
+            <Text style={styles.usr_name}>卡卡bibi</Text>
+            <Text style={styles.operation_fav}>添加收藏</Text>
+          </View>
           <View style={[styles.rowWrap, styles.marginTop]}>
             <View style={styles.rowWrap}>
               <View>
@@ -96,6 +118,7 @@ class MdseContainer extends Component {
           <Text style={styles.marginTop}>成色: 100%</Text>
           <Text style={styles.marginTop}>电话: 10101000101010101</Text>
           <Text style={styles.marginTop}>入手时间: 1990-90-90</Text>
+          <Text style={styles.marginTop}>发布时间: 1990-90-90</Text>
           <Text style={styles.detail}>
             描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述
             描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述

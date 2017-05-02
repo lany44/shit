@@ -26,8 +26,7 @@ const styles = StyleSheet.create({
     marginRight: .2*rem
   },
   textLabel: {
-    paddingLeft: .5*rem,
-    width: 2*rem
+    width: 2.5*rem
   },
   textInput: {
     flex: 1,
@@ -45,15 +44,16 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     padding: .2*rem,
   },
-  img: {
-    width: '100%',
-    height: windowHeight * .4
+  usrContainer: {
+    flex: 1,
+    margin: 2*rem,
+    alignItems: 'center',
+    justifyContent: 'center'
   },
-  imgText: {
-    width: '100%',
-    height: windowHeight * .4,
-    textAlign: 'center',
-    paddingTop: windowHeight * .2
+  usr_pic: {
+    width: 3*rem,
+    height: 3*rem,
+    borderRadius: 60,
   },
   button: {
     width: 4*rem,
@@ -70,7 +70,7 @@ const styles = StyleSheet.create({
   }
 });
 
-class PublishContainer extends Component {
+class ResigteContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -114,41 +114,30 @@ class PublishContainer extends Component {
       <View style={styles.containerWrap}>
         <ScrollView>
           <View style={styles.rowWrap} onPress={this.handlePick}>
-            {
-              this.state.avatarSource ?
-                <Image source={this.state.avatarSource} onPress={this.handlePick} style={styles.img} />
-              : <Text style={styles.imgText} onPress={this.handlePick}>点击选择一张图片</Text>
-            }
+            <View style={styles.usrContainer}>
+              <Image source={require('../asset/2.jpg')} style={styles.usr_pic}/>
+            </View>
           </View>
           <View style={styles.rowWrap}>
-            <Text style={styles.textLabel}>名称:</Text>
+            <Text style={styles.textLabel}>手机号:</Text>
             <TextInput style={styles.textInput}/>
           </View>
           <View style={styles.rowWrap}>
-            <Text style={styles.textLabel}>简介:</Text>
+            <Text style={styles.textLabel}>用户名:</Text>
             <TextInput style={styles.textInput}/>
           </View>
           <View style={styles.rowWrap}>
-            <Text style={styles.textLabel}>校区:</Text>
+            <Text style={styles.textLabel}>密码:</Text>
             <TextInput style={styles.textInput}/>
           </View>
           <View style={styles.rowWrap}>
-            <Text style={styles.textLabel}>价钱:</Text>
+            <Text style={styles.textLabel}>再次输入密码:</Text>
             <TextInput style={styles.textInput}/>
           </View>
           <View style={styles.rowWrap}>
-            <Text style={styles.textLabel}>成色:</Text>
+            <Text style={styles.textLabel}>验证码:</Text>
             <TextInput style={styles.textInput}/>
-            <Text style={{marginRight: 5*rem, marginLeft: .3*rem}}>％</Text>
-          </View>
-          <View style={styles.rowWrap}>
-            <Text style={styles.textLabel}>详细:</Text>
-            <TextInput
-
-              multiline={true}
-              numberOfLines={4}
-              style={styles.textareaInput}
-            />
+            <Text style={[styles.button, {marginLeft: .5*rem, width: 3*rem}]} onPress={this.handleSubmit}>获取验证码</Text>
           </View>
           <View style={[styles.rowWrap, styles.buttonContainer]}>
             <Text style={styles.button} onPress={this.handleSubmit}>提交</Text>
@@ -159,4 +148,4 @@ class PublishContainer extends Component {
   }
 }
 
-export default PublishContainer;
+export default ResigteContainer;

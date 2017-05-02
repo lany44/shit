@@ -11,7 +11,9 @@ const appReducer = (state, action) => {
     default: {
       return {
         isloading: false,
-        islogin: true
+        isUploading: false,
+        islogin: true,
+        fav_mdse_list: [{id: 1},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
       }
     }
   }
@@ -26,7 +28,7 @@ const routeReducer = (state, action) => {
       return {path: 'mdse', id: action.id}
     }
     default: {
-      return {path: 'list', id: 1}
+      return {path: 'registe', id: 1}
     }
   }
 };

@@ -63,7 +63,7 @@ class statusHeader extends Component {
   }
 
   render() {
-    return this.props.isloading ?
+    return this.props.isUploading ?
       <View style={styles.wrap}>
         <Animated.Text style={[styles.loading, {
           transform: [{

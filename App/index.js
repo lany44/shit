@@ -19,6 +19,7 @@ import ListContainer from './container/list';
 import MdseContainer from './container/mdse';
 import PublishContainer from './container/publish';
 import ProfileContainer from './container/profile';
+import RegisteContainer from './container/registe';
 import FooterContainer from './container/footer';
 import StatusHeader from './component/statusHeader'
 
@@ -38,17 +39,34 @@ class App extends Component {
     super(props);
   }
 
+  renderItem() {
+    const { route, app, listPage, routeAction } = this.props;
+    switch (route.path) {
+      case 'list' : {
+        return <ListContainer listPage={listPage} app={app} clickHandle={routeAction.checkMdseDetail}/>
+      }
+      case 'mdse' : {
+        return <MdseContainer />
+      }
+      case 'publish' : {
+        return <PublishContainer />
+      }
+      case 'profile' : {
+        return <ProfileContainer islogin={app.islogin} fav_mdse_list={app.fav_mdse_list} clickHandle={this.props.routeAction.checkMdseDetail}/>
+      }
+      case 'registe' : {
+        return <RegisteContainer listPage={listPage} app={app} clickHandle={routeAction.checkMdseDetail}/>
+      }
+    }
+  }
   render() {
-    const { route, app, listPage } = this.props;
+    const { route, app, listPage, routeAction } = this.props;
     return (
       <View style={styles.wrap}>
         <View style={styles.headerWrap}>
-          <StatusHeader isloading={app.isloading}/>
+          <StatusHeader isUploading={app.isUploading}/>
         </View>
-        {route.path === 'list' ? <ListContainer state={listPage} clickHandle={this.props.routeAction.checkMdseDetail}/> : null}
-        {route.path === 'mdse' ? <MdseContainer id={route.id} /> : null}
-        {route.path === 'publish' ? <PublishContainer /> : null}
-        {route.path === 'profile' ? <ProfileContainer /> : null}
+        {this.renderItem()}
         <FooterContainer islogin={app.islogin} path={route.path} {...this.props.routeAction}/>
       </View>
     )
