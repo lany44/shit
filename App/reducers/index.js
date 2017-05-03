@@ -8,13 +8,27 @@ const appReducer = (state, action) => {
     case 'CHANGE_LOADING': {
       return Object.assign({}, state, {isloading: action.isloading});
     }
+    case 'CHANGE_UPLOADING': {
+      return Object.assign({}, state, {isUploading: action.isUploading});
+    }
+    case 'REGISTE_SUCCESS': {
+      return Object.assign({}, state, action.pay_load);
+    }
+    case 'LOGIN_SUCCESS': {
+      return Object.assign({}, state, action.pay_load);
+    }
+    case 'LOGOUT': {
+      return Object.assign({}, state, {islogin: false});
+    }
     default: {
-      return {
+      return Object.assign({}, {
         isloading: false,
         isUploading: false,
-        islogin: true,
-        fav_mdse_list: [{id: 1},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-      }
+        islogin: false,
+        nickname: null,
+        phoneNumber: null,
+        accessToken: null
+      }, state);
     }
   }
 };
@@ -22,13 +36,13 @@ const appReducer = (state, action) => {
 const routeReducer = (state, action) => {
   switch (action.type) {
     case 'CHANGE_ROUTE': {
-      return {path: action.new_path}
+      return Object.assign({}, state, {path: action.new_path});
     }
     case 'CHECK_MDSE_DETAIL': {
-      return {path: 'mdse', id: action.id}
+      return Object.assign({}, state, {path: 'mdse', id: action.id});
     }
     default: {
-      return {path: 'registe', id: 1}
+      return Object.assign({}, {path: 'list'}, state)
     }
   }
 };
@@ -36,12 +50,11 @@ const routeReducer = (state, action) => {
 const listPageReducer = (state, action) => {
   switch (action.type) {
     default: {
-      return {
+      return Object.assign({}, {
         init: false,
         page: 1,
         items_in_page: 10,
-        mdse_list: [{id: 1},1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]
-      }
+      }, state)
     }
   }
 };

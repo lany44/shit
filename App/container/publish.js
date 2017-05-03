@@ -144,7 +144,6 @@ class PublishContainer extends Component {
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>详细:</Text>
             <TextInput
-
               multiline={true}
               numberOfLines={4}
               style={styles.textareaInput}

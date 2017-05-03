@@ -23,6 +23,9 @@ const styles = StyleSheet.create({
 class ListContainer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      mdse_list: []
+    }
   }
 
   componentDidMount() {
@@ -34,7 +37,8 @@ class ListContainer extends Component {
   }
 
   render() {
-    const { listPage:{init, mdse_list}, app:{isloading} } = this.props;
+    const { listPage:{init, page, items_in_page}, app:{isloading} } = this.props;
+    const mdse_list = this.state.mdse_list;
     const checkMdseDetail = this.props.clickHandle;
     const style = init ? styles.emptyContainer : styles.mdseContainer;
     return <ScrollView

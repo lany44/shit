@@ -8,10 +8,13 @@ import {
   View,
   Image,
   Text,
-  TextInput
+  TextInput,
+  AlertIOS,
+  AsyncStorage
 } from 'react-native';
 import {rem} from '../config/sys_config'
 import MdseItem from '../component/mdseItem';
+import {API, myFetch} from '../lib/myFetch';
 
 const styles = StyleSheet.create({
   profileContainer: {
@@ -81,14 +84,57 @@ const styles = StyleSheet.create({
 class ProfileContainer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      phoneNumber: null,
+      password: null,
+      fav_mdse_list: []
+    }
   }
+  componentDidMount() {
+
+  }
+
+  handleLogin = () => {
+    const {phoneNumber, password} = this.state;
+    myFetch(API.login, {phoneNumber, password})
+      .then((res) => {
+        const data = res.data;
+        if (res.err) {
+          this.props.isUploading(false)
+          return AlertIOS.alert('提示', res.err);
+        }
+        AsyncStorage.multiSet([
+          ['phoneNumber', data.phoneNumber],
+          ['accessToken', data.accessToken]
+        ], () => {
+          this.props.loginSuccess({
+            phoneNumber: data.phoneNumber,
+            accessToken: data.accessToken,
+            nickname: data.nickname,
+            isUploading: false,
+            islogin: true
+          });
+          this.props.routeTo('list')
+        });
+      })
+  }
+
+  handleLogout = () => {
+    this.setState({
+      phoneNumber: null,
+      password: null
+    })
+    this.props.logout();
+  }
+
   render() {
-    const {islogin, fav_mdse_list, clickHandle} = this.props;
-    return true ? <ScrollView style={styles.profileContainer}>
-      <Text style={styles.logout}>注销</Text>
+    const {app, clickHandle, routeTo} = this.props;
+    const fav_mdse_list = this.state.fav_mdse_list;
+    return app.islogin ? <ScrollView style={styles.profileContainer}>
+      <Text style={styles.logout} onPress={this.handleLogout}>注销</Text>
       <View style={styles.usrContainer}>
         <Image source={require('../asset/2.jpg')} style={styles.usr_pic}/>
-        <Text style={styles.usr_name}>卡卡bibi</Text>
+        <Text style={styles.usr_name}>{app.nickname}</Text>
       </View>
       <View style={styles.fav_list}>
         {fav_mdse_list.map((item, index) => <MdseItem key={index} id={item.id} clickHandle={()=>clickHandle(item.id)}/>)}
@@ -97,15 +143,22 @@ class ProfileContainer extends Component {
     : <View style={styles.usrContainer}>
         <View style={styles.rowWrap}>
           <Text>账号:</Text>
-          <TextInput style={styles.textInput}/>
+          <TextInput
+            style={styles.textInput}
+            onChangeText={(phoneNumber) => this.setState({phoneNumber})}
+          />
         </View>
         <View style={styles.rowWrap}>
           <Text>密码:</Text>
-          <TextInput style={styles.textInput}/>
+          <TextInput
+            style={styles.textInput}
+            password={true}
+            onChangeText={(password) => this.setState({password})}
+          />
         </View>
         <View style={styles.rowWrap}>
-          <Text style={styles.button}>登陆</Text>
-          <Text style={styles.button}>注册</Text>
+          <Text style={styles.button} onPress={this.handleLogin}>登陆</Text>
+          <Text style={styles.button} onPress={()=>routeTo('registe')}>注册</Text>
         </View>
       </View>
   }

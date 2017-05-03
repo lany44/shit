@@ -9,10 +9,13 @@ import {
   Image,
   TextInput,
   ScrollView,
-  Button
+  Button,
+  AlertIOS,
+  AsyncStorage
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {rem, windowHeight} from '../config/sys_config';
+import {API, myFetch} from '../lib/myFetch';
 
 const styles = StyleSheet.create({
   containerWrap: {
@@ -67,6 +70,10 @@ const styles = StyleSheet.create({
   buttonContainer: {
     flex: 1,
     justifyContent: 'center'
+  },
+  verify_fix: {
+    marginLeft: .5*rem,
+    width: 3*rem
   }
 });
 
@@ -74,70 +81,136 @@ class ResigteContainer extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showImagePicker: false,
-      avatarSource: null
+      timer: null,
+      verify_text: '获取验证码',
+      phoneNumber: null,
+      nickname: null,
+      password: null,
+      password_again: null,
+      verifyCode: null
     };
   }
 
-  handlePick = () => {
-    const options = {
-      title: '选择一张图片',
-      storageOptions: {
-        skipBackup: true,
-        path: 'images'
+  setVerifyText = () => {
+    let _timer = setInterval(()=>{
+      var {verify_text, timer} = this.state;
+      if (!timer) {
+        return this.setState({
+          timer: _timer,
+          verify_text: 60
+        })
+      } else if (verify_text===0) {
+        clearInterval(timer)
+        return this.setState({
+          timer: null,
+          verify_text: '获取验证码'
+        })
+      } else {
+        return this.setState({
+          verify_text: verify_text-1
+        })
       }
-    };
-    ImagePicker.showImagePicker(options, (response)  => {
-      console.log('Response = ', response);
-      if (response.didCancel) {
-        console.log('User cancelled image picker');
-      }
-      else if (response.error) {
-        console.log('ImagePicker Error: ', response.error);
-      }
-      else {
-        let source = { uri: response.uri };
-        console.log(source)
-        this.setState({
-          avatarSource: source
-        });
-      }
-    });
+    }, 1000)
+
+  }
+
+  handleGetVerifyCode = () => {
+    const {phoneNumber, timer} = this.state;
+    if (!phoneNumber || timer) {
+      return AlertIOS.alert('提示', '错误');
+    }
+    myFetch(API.signup, {
+      phoneNumber: this.state.phoneNumber
+    })
+      .then((res) => {
+        const data = res.data;
+        if (res.err) {
+          return AlertIOS.alert('提示', res.err);
+        }
+        this.setVerifyText();
+      })
   }
 
   handleSubmit = () => {
-
+    const {password, password_again} = this.state;
+    if(password !== password_again) {
+      return AlertIOS.alert('提示', '密码输入不一致');
+    }
+    this.props.isUploading(true)
+    myFetch(API.verify, {
+      phoneNumber: this.state.phoneNumber,
+      nickname: this.state.nickname,
+      password: this.state.password,
+      verifyCode: this.state.verifyCode,
+    })
+      .then((res) => {
+        const data = res.data;
+        if (res.err) {
+          this.props.isUploading(false)
+          return AlertIOS.alert('提示', res.err);
+        }
+        AsyncStorage.multiSet([
+          ['phoneNumber', JSON.stringify(data.phoneNumber)],
+          ['accessToken', JSON.stringify(data.accessToken)]
+        ], () => {
+          this.props.registeSuccess({
+            phoneNumber: data.phoneNumber,
+            accessToken: data.accessToken,
+            nickname: data.nickname,
+            isUploading: false,
+            islogin: true
+          });
+          this.props.routeTo('list')
+        });
+      })
   }
 
   render() {
     return (
       <View style={styles.containerWrap}>
         <ScrollView>
-          <View style={styles.rowWrap} onPress={this.handlePick}>
+          <View style={styles.rowWrap}>
             <View style={styles.usrContainer}>
               <Image source={require('../asset/2.jpg')} style={styles.usr_pic}/>
             </View>
           </View>
           <View style={styles.rowWrap}>
-            <Text style={styles.textLabel}>手机号:</Text>
-            <TextInput style={styles.textInput}/>
+            <Text ref={'phoneNumber'} style={styles.textLabel}>手机号:</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(phoneNumber) => this.setState({phoneNumber})}
+            />
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>用户名:</Text>
-            <TextInput style={styles.textInput}/>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(nickname) => this.setState({nickname})}
+            />
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>密码:</Text>
-            <TextInput style={styles.textInput}/>
+            <TextInput
+              style={styles.textInput}
+              password={true}
+              onChangeText={(password) => this.setState({password})}
+            />
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>再次输入密码:</Text>
-            <TextInput style={styles.textInput}/>
+            <TextInput
+              style={styles.textInput}
+              password={true}
+              onChangeText={(password_again) => this.setState({password_again})}
+            />
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>验证码:</Text>
-            <TextInput style={styles.textInput}/>
-            <Text style={[styles.button, {marginLeft: .5*rem, width: 3*rem}]} onPress={this.handleSubmit}>获取验证码</Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(verifyCode) => this.setState({verifyCode})}
+            />
+            <Text style={[styles.button, styles.verify_fix]} onPress={this.handleGetVerifyCode}>{this.state.verify_text}</Text>
           </View>
           <View style={[styles.rowWrap, styles.buttonContainer]}>
             <Text style={styles.button} onPress={this.handleSubmit}>提交</Text>
