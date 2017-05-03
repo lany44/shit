@@ -7,9 +7,11 @@ import {
   ScrollView,
   View,
   Image,
-  Text
+  Text,
+  AlertIOS
 } from 'react-native';
-import {rem, windowHeight} from '../config/sys_config';
+import {rem, windowHeight, img_server} from '../config/sys_config';
+import {API, myFetch} from '../lib/myFetch'
 
 const styles = StyleSheet.create({
   containerWrap: {
@@ -89,16 +91,65 @@ const styles = StyleSheet.create({
 class MdseContainer extends Component {
   constructor(props) {
     super(props);
+    this.state = {
+      isFav: false
+    }
   }
+
+  componentDidMount() {
+    const mdse_id = this.props.route.item._id;
+    const {phoneNumber, accessToken} = this.props.app;
+    this.props.isloading(true)
+    myFetch(API.getFavStatus, {mdse_id, phoneNumber, accessToken})
+      .then(res => {
+        this.props.isloading(false)
+        if (res.err) {
+          return AlertIOS.alert('提示', res.err);
+        }
+        this.setState({
+          isFav: res.isFav
+        })
+      })
+  }
+
+  handleDoFav = () => {
+    const mdse_id = this.props.route.item._id;
+    const {phoneNumber, accessToken} = this.props.app;
+    this.props.isloading(true)
+    myFetch(API.star, {
+      accessToken,
+      mdse_id,
+      phoneNumber,
+    })
+      .then(res => {
+        this.props.isloading(false)
+        if (res.err) {
+          return AlertIOS.alert('提示', res.err);
+        }
+        this.setState({
+          isFav: res.isFav
+        })
+      })
+  }
+
   render() {
+    const {routeTo, route:{item}} = this.props;
+    const {isFav} = this.state;
+    const img_src = img_server + item.img;
+    const createAt = new Date(item.meta.createAt).toLocaleString("zh-cn")
     return (
       <View style={styles.containerWrap}>
         <ScrollView>
-          <Image source={require('../asset/1.jpg')} style={styles.img}/>
+          <Image source={{uri: img_src}} style={styles.img}/>
           <View style={[styles.usrContainer, styles.marginTop]}>
             <Image source={require('../asset/2.jpg')} style={styles.usr_pic}/>
-            <Text style={styles.usr_name}>卡卡bibi</Text>
-            <Text style={styles.operation_fav}>添加收藏</Text>
+            <Text style={styles.usr_name}>{item.author.nickname}</Text>
+            <Text
+              style={styles.operation_fav}
+              onPress={this.handleDoFav}
+            >
+              {isFav ? '取消收藏' : '添加收藏'}
+            </Text>
           </View>
           <View style={[styles.rowWrap, styles.marginTop]}>
             <View style={styles.rowWrap}>
@@ -106,29 +157,27 @@ class MdseContainer extends Component {
                 <Text>名称: </Text>
               </View>
               <View>
-                <Text style={styles.title} numberOfLines={1}>ahhahah</Text>
-                <Text style={styles.desc} numberOfLines={1}>哈哈哈哈</Text>
+                <Text style={styles.title} numberOfLines={1}>{item.title}</Text>
+                <Text style={styles.desc} numberOfLines={1}>{item.desc}</Text>
               </View>
             </View>
             <View>
-              <Text style={styles.price}>¥99</Text>
+              <Text style={styles.price}>¥{item.price}</Text>
             </View>
           </View>
-          <Text style={styles.marginTop}>校区: 东北校区</Text>
-          <Text style={styles.marginTop}>成色: 100%</Text>
-          <Text style={styles.marginTop}>电话: 10101000101010101</Text>
-          <Text style={styles.marginTop}>入手时间: 1990-90-90</Text>
-          <Text style={styles.marginTop}>发布时间: 1990-90-90</Text>
+          <Text style={styles.marginTop}>校区: {item.position}</Text>
+          <Text style={styles.marginTop}>成色: {item.percent}%</Text>
+          <Text style={styles.marginTop}>电话: {item.author.phoneNumber}</Text>
+          <Text style={styles.marginTop}>发布时间: {createAt}</Text>
           <Text style={styles.detail}>
-            描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述
-            描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述
-            描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述
-            描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述
-            描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述
+            {item.detail}
           </Text>
         </ScrollView>
         <View style={styles.back}>
-          <Text style={styles.backText}>返回</Text>
+          <Text
+            style={styles.backText}
+            onPress={()=>routeTo('list')}
+          >返回</Text>
         </View>
       </View>
     );

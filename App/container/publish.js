@@ -9,10 +9,13 @@ import {
   Image,
   TextInput,
   ScrollView,
-  Button
+  TouchableHighlight,
+  Button,
+  AlertIOS
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {rem, windowHeight} from '../config/sys_config';
+import {API} from '../lib/myFetch';
 
 const styles = StyleSheet.create({
   containerWrap: {
@@ -75,7 +78,13 @@ class PublishContainer extends Component {
     super(props);
     this.state = {
       showImagePicker: false,
-      avatarSource: null
+      img: null,
+      author: null,
+      title: null,
+      desc: null,
+      price: null,
+      percent: null,
+      detail: null,
     };
   }
 
@@ -88,7 +97,6 @@ class PublishContainer extends Component {
       }
     };
     ImagePicker.showImagePicker(options, (response)  => {
-      console.log('Response = ', response);
       if (response.didCancel) {
         console.log('User cancelled image picker');
       }
@@ -97,16 +105,43 @@ class PublishContainer extends Component {
       }
       else {
         let source = { uri: response.uri };
-        console.log(source)
         this.setState({
-          avatarSource: source
+          img: source
         });
       }
     });
   }
 
   handleSubmit = () => {
-
+    const {app} = this.props;
+    const {img, title, desc, position, price, percent, detail} = this.state;
+    const data = new FormData()
+    data.append('image', {uri: img.uri, name: 'image.jpg', type: 'image/jpg'})
+    data.append('title', title)
+    data.append('desc', desc)
+    data.append('position', position)
+    data.append('price', price)
+    data.append('percent', percent)
+    data.append('detail', detail)
+    this.props.isUploading(true)
+    fetch(API.publish, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'multipart/form-data;  boundary=6ff46e0b6b5148d984f148b6542e5a5d',
+          'access-token': app.accessToken,
+          'phone-number': app.phoneNumber,
+        },
+        body: data
+      })
+      .then(res => res.json())
+      .then(res => {
+        this.props.isUploading(false)
+        if (res.err) {
+          return AlertIOS.alert('提示', res.err);
+        }
+        this.props.checkMdseDetail(res.data)
+      })
   }
 
   render() {
@@ -115,30 +150,47 @@ class PublishContainer extends Component {
         <ScrollView>
           <View style={styles.rowWrap} onPress={this.handlePick}>
             {
-              this.state.avatarSource ?
-                <Image source={this.state.avatarSource} onPress={this.handlePick} style={styles.img} />
+              this.state.img ?
+                <TouchableHighlight onPress={this.handlePick}>
+                  <Image source={this.state.img} style={styles.img} />
+                </TouchableHighlight>
               : <Text style={styles.imgText} onPress={this.handlePick}>点击选择一张图片</Text>
             }
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>名称:</Text>
-            <TextInput style={styles.textInput}/>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(title) => this.setState({title})}
+            />
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>简介:</Text>
-            <TextInput style={styles.textInput}/>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(desc) => this.setState({desc})}
+            />
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>校区:</Text>
-            <TextInput style={styles.textInput}/>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(position) => this.setState({position})}
+            />
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>价钱:</Text>
-            <TextInput style={styles.textInput}/>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(price) => this.setState({price})}
+            />
           </View>
           <View style={styles.rowWrap}>
             <Text style={styles.textLabel}>成色:</Text>
-            <TextInput style={styles.textInput}/>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={(percent) => this.setState({percent})}
+            />
             <Text style={{marginRight: 5*rem, marginLeft: .3*rem}}>％</Text>
           </View>
           <View style={styles.rowWrap}>
@@ -147,6 +199,7 @@ class PublishContainer extends Component {
               multiline={true}
               numberOfLines={4}
               style={styles.textareaInput}
+              onChangeText={(detail) => this.setState({detail})}
             />
           </View>
           <View style={[styles.rowWrap, styles.buttonContainer]}>

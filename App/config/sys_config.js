@@ -13,3 +13,4 @@ exports.rem = windowWidth / 10;
 
 /************** api ****************/
 exports.server = 'http://127.0.0.1:1234/api';
+exports.img_server = 'http://127.0.0.1:1234/images/';

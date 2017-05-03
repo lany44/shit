@@ -39,7 +39,7 @@ const routeReducer = (state, action) => {
       return Object.assign({}, state, {path: action.new_path});
     }
     case 'CHECK_MDSE_DETAIL': {
-      return Object.assign({}, state, {path: 'mdse', id: action.id});
+      return Object.assign({}, state, {path: 'mdse', item: action.item});
     }
     default: {
       return Object.assign({}, {path: 'list'}, state)

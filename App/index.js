@@ -75,13 +75,13 @@ class App extends Component {
     const { route, app, listPage, routeAction } = this.props;
     switch (route.path) {
       case 'list' : {
-        return <ListContainer listPage={listPage} app={app} clickHandle={routeAction.checkMdseDetail}/>
+        return <ListContainer listPage={listPage} app={app} {...this.props.routeAction} clickHandle={routeAction.checkMdseDetail}/>
       }
       case 'mdse' : {
-        return <MdseContainer />
+        return <MdseContainer app={app} route={route} {...this.props.routeAction} />
       }
       case 'publish' : {
-        return <PublishContainer />
+        return <PublishContainer app={app} {...this.props.routeAction} />
       }
       case 'profile' : {
         return <ProfileContainer app={app} {...this.props.routeAction} clickHandle={this.props.routeAction.checkMdseDetail}/>

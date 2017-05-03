@@ -5,9 +5,11 @@ import React, { Component } from 'react';
 import {
   StyleSheet,
   ScrollView,
-  RefreshControl
+  RefreshControl,
+  AlertIOS
 } from 'react-native';
 import {rem} from '../config/sys_config';
+import {API, myFetch} from '../lib/myFetch'
 import MdseItem from '../component/mdseItem';
 
 const styles = StyleSheet.create({
@@ -29,11 +31,21 @@ class ListContainer extends Component {
   }
 
   componentDidMount() {
-    
+    this.handleGetMdse()
   }
 
-  handleGetMore = () => {
-
+  handleGetMdse = () => {
+    this.props.isloading(true)
+    myFetch(API.getAll, {})
+      .then(res => {
+        this.props.isloading(false)
+        if (res.err) {
+          return AlertIOS.alert('提示', res.err);
+        }
+        this.setState({
+          mdse_list: res.data
+        })
+      })
   }
 
   render() {
@@ -45,13 +57,13 @@ class ListContainer extends Component {
       refreshControl={
         <RefreshControl
           refreshing={isloading}
-          onRefresh={this.handleGetMore}
+          onRefresh={this.handleGetMdse}
         />
       }
       contentContainerStyle={style}
       automaticallyAdjustContentInsets={false}
     >
-      {mdse_list.map((item, index) => <MdseItem key={index} id={item.id} clickHandle={checkMdseDetail}/>)}
+      {mdse_list.map((item, index) => <MdseItem key={index} data={item} clickHandle={checkMdseDetail}/>)}
     </ScrollView>
   }
 }

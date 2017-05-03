@@ -10,7 +10,8 @@ import {
   Text,
   TextInput,
   AlertIOS,
-  AsyncStorage
+  AsyncStorage,
+  RefreshControl
 } from 'react-native';
 import {rem} from '../config/sys_config'
 import MdseItem from '../component/mdseItem';
@@ -55,7 +56,8 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingLeft: .2*rem
+    paddingLeft: .2*rem,
+    marginTop: 1*rem
   },
   button: {
     width: 2*rem,
@@ -78,6 +80,10 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: .5*rem,
     right: .5*rem
+  },
+  fav: {
+    flex: 1,
+    alignSelf: 'center',
   }
 });
 
@@ -91,16 +97,34 @@ class ProfileContainer extends Component {
     }
   }
   componentDidMount() {
+    this.getFavList()
+  }
 
+  getFavList = () => {
+    const {islogin, phoneNumber, accessToken} = this.props.app
+    if (islogin) {
+      this.props.isloading(true)
+      myFetch(API.getFav, {phoneNumber, accessToken})
+        .then((res) => {
+          this.props.isloading(false)
+          if (res.err) {
+            return AlertIOS.alert('提示', res.err);
+          }
+          this.setState({
+            fav_mdse_list: res.data
+          })
+        })
+    }
   }
 
   handleLogin = () => {
     const {phoneNumber, password} = this.state;
+    this.props.isloading(true)
     myFetch(API.login, {phoneNumber, password})
       .then((res) => {
         const data = res.data;
+        this.props.isloading(false)
         if (res.err) {
-          this.props.isUploading(false)
           return AlertIOS.alert('提示', res.err);
         }
         AsyncStorage.multiSet([
@@ -130,14 +154,23 @@ class ProfileContainer extends Component {
   render() {
     const {app, clickHandle, routeTo} = this.props;
     const fav_mdse_list = this.state.fav_mdse_list;
-    return app.islogin ? <ScrollView style={styles.profileContainer}>
+    return app.islogin ? <ScrollView
+      style={styles.profileContainer}
+      refreshControl={
+        <RefreshControl
+          refreshing={app.isloading}
+          onRefresh={this.getFavList}
+        />
+      }
+    >
       <Text style={styles.logout} onPress={this.handleLogout}>注销</Text>
       <View style={styles.usrContainer}>
         <Image source={require('../asset/2.jpg')} style={styles.usr_pic}/>
         <Text style={styles.usr_name}>{app.nickname}</Text>
       </View>
+      <Text style={styles.fav}>我的收藏</Text>
       <View style={styles.fav_list}>
-        {fav_mdse_list.map((item, index) => <MdseItem key={index} id={item.id} clickHandle={()=>clickHandle(item.id)}/>)}
+        {fav_mdse_list.map((item, index) => <MdseItem key={index} data={item} clickHandle={()=>clickHandle(item)}/>)}
       </View>
     </ScrollView>
     : <View style={styles.usrContainer}>

@@ -6,8 +6,8 @@ exports.routeTo = function (new_path) {
   return {type: 'CHANGE_ROUTE', new_path}
 };
 
-exports.checkMdseDetail = function (id) {
-  return {type: 'CHECK_MDSE_DETAIL', id}
+exports.checkMdseDetail = function (item) {
+  return {type: 'CHECK_MDSE_DETAIL', item}
 };
 
 exports.isloading = function (status) {

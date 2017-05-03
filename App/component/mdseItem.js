@@ -9,7 +9,7 @@ import {
   Text,
   TouchableHighlight
 } from 'react-native';
-import {rem} from '../config/sys_config';
+import {rem, img_server} from '../config/sys_config';
 
 
 const styles = StyleSheet.create({
@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
     fontSize: .3*rem,
     color: 'gray'
   },
-  count: {
+  price: {
     fontSize: .4*rem,
     fontWeight: 'bold',
     color: 'red'
@@ -56,19 +56,20 @@ class Mdse extends Component {
   }
 
   render() {
-    const {clickHandle, id} = this.props;
+    const {clickHandle, data} = this.props;
+    const img_src = img_server + data.img
     return <View style={styles.mdseWrap}>
-        <TouchableHighlight onPress={()=>clickHandle(id)}>
-          <Image source={require('../asset/1.jpg')} style={styles.img}/>
+        <TouchableHighlight onPress={()=>clickHandle(data)}>
+          <Image source={{uri: img_src}} style={styles.img}/>
         </TouchableHighlight>
         <View style={styles.container}>
           <View style={styles.textWrap}>
-            <Text style={styles.title} onPress={()=>clickHandle(id)} numberOfLines={1}>哈哈哈哈哈哈哈哈哈</Text>
-            <Text style={styles.desc} numberOfLines={1}>哈哈哈哈哈哈哈哈哈</Text>
+            <Text style={styles.title} onPress={()=>clickHandle(data)} numberOfLines={1}>{data.title}</Text>
+            <Text style={styles.desc} numberOfLines={1}>{data.desc}</Text>
           </View>
           <View>
-            <Text style={styles.count} numberOfLines={1}>¥99</Text>
-            <Text style={styles.percent}>100%</Text>
+            <Text style={styles.price} numberOfLines={1}>¥{data.price}</Text>
+            <Text style={styles.percent}>{data.percent}%</Text>
           </View>
         </View>
       </View>

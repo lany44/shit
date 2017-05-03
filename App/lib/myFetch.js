@@ -7,6 +7,13 @@ exports.API = {
   signup: server + '/u/signup',
   verify: server + '/u/verify',
   login: server + '/u/login',
+  getFavStatus: server + '/u/getFavStatus',
+  star: server + '/u/star',
+  getFav: server + '/u/getFav',
+
+
+  getAll: server + '/mdse/getAll',
+  publish: server + '/mdse/publish',
 }
 
 exports.myFetch = (api, pay_load) => {
